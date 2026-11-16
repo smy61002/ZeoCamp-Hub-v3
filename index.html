@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f7f2">
+  <title>ZeoCamp-Hub｜一起把露營準備好</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+    body { font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+    input, textarea, select, button { font: inherit; }
+    input[type="checkbox"] { accent-color: #527a50; }
+    .field { width: 100%; border: 1px solid #e3e7df; border-radius: .75rem; background: #fff; padding: .68rem .8rem; color: #26352b; outline: none; transition: border-color .15s, box-shadow .15s; }
+    .field:focus { border-color: #759570; box-shadow: 0 0 0 3px rgb(82 122 80 / 12%); }
+    .field::placeholder { color: #a7afa5; }
+    .label { display: block; margin-bottom: .4rem; color: #748075; font-size: .75rem; font-weight: 600; letter-spacing: .02em; }
+    .section-card { border: 1px solid #e9ece5; border-radius: 1.25rem; background: #fff; box-shadow: 0 3px 14px rgb(36 53 39 / 3%); }
+    .soft-scroll { scrollbar-width: thin; scrollbar-color: #d7ded4 transparent; }
+    .accordion-panel { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .32s ease, opacity .2s ease; }
+    .accordion-panel.is-open { opacity: 1; }
+    .toast { animation: toast-in .22s ease-out; }
+    @keyframes toast-in { from { opacity: 0; transform: translate(-50%, .5rem); } to { opacity: 1; transform: translate(-50%, 0); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body class="min-h-screen bg-[#f6f7f2] text-[#26352b] antialiased">
+  <header class="sticky top-0 z-30 border-b border-[#e7ebe3] bg-[#f6f7f2]/95 backdrop-blur">
+    <div class="mx-auto flex min-h-[68px] max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
+      <a href="#top" class="flex shrink-0 items-center gap-2.5" aria-label="ZeoCamp-Hub 首頁">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-[#527a50] text-white">
+          <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true"><path d="m3 20 9-16 9 16H3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m8 20 4-7 4 7M12 4v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <span class="font-bold tracking-tight">ZeoCamp<span class="text-[#789175]">-Hub</span></span>
+      </a>
+      <div class="flex min-w-0 flex-1 items-center justify-end gap-2 sm:flex-none">
+        <label class="sr-only" for="project-select">切換露營行程</label>
+        <select id="project-select" class="field min-h-10 max-w-[190px] py-2 text-sm sm:max-w-[240px]" aria-label="切換露營行程"></select>
+        <button type="button" data-action="add-project" class="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#527a50] px-3 text-xs font-semibold text-white hover:bg-[#426741] sm:px-3.5 sm:text-sm"><span class="text-lg leading-none">＋</span><span class="hidden sm:inline">新增行程</span><span class="sm:hidden">新增</span></button>
+      </div>
+      <nav class="soft-scroll order-3 flex w-full gap-2 overflow-x-auto border-t border-[#e7ebe3] pt-2 md:order-none md:w-auto md:border-0 md:pt-0" aria-label="頁面導覽">
+        <a href="#overview" class="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs text-[#69766b] hover:bg-[#edf0e9] md:rounded-lg md:bg-transparent md:py-2 md:text-sm">行程</a>
+        <a href="#people" class="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs text-[#69766b] hover:bg-[#edf0e9] md:rounded-lg md:bg-transparent md:py-2 md:text-sm">夥伴</a>
+        <a href="#transport" class="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs text-[#69766b] hover:bg-[#edf0e9] md:rounded-lg md:bg-transparent md:py-2 md:text-sm">交通</a>
+        <a href="#menu" class="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs text-[#69766b] hover:bg-[#edf0e9] md:rounded-lg md:bg-transparent md:py-2 md:text-sm">菜單採買</a>
+        <a href="#gear" class="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs text-[#69766b] hover:bg-[#edf0e9] md:rounded-lg md:bg-transparent md:py-2 md:text-sm">公裝</a>
+        <a href="#line-notice" class="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs text-[#69766b] hover:bg-[#edf0e9] md:rounded-lg md:bg-transparent md:py-2 md:text-sm">LINE 公告</a>
+      </nav>
+      <span class="hidden shrink-0 items-center gap-1.5 rounded-full bg-[#e8eee4] px-3 py-1.5 text-xs font-medium text-[#527a50] lg:inline-flex"><span class="h-1.5 w-1.5 rounded-full bg-[#71966d]"></span>已儲存於此裝置</span>
+    </div>
+  </header>
+
+  <main id="top" class="mx-auto max-w-7xl px-4 pb-20 pt-7 sm:px-6 sm:pt-10 lg:px-8">
+    <section class="relative overflow-hidden rounded-[1.7rem] bg-[#294738] px-6 py-8 text-white sm:px-9 sm:py-10">
+      <div class="pointer-events-none absolute -right-10 -top-20 h-72 w-72 rounded-full border border-white/10"></div>
+      <div class="pointer-events-none absolute -right-1 top-4 h-52 w-52 rounded-full border border-white/10"></div>
+      <div class="relative max-w-2xl">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs text-[#dce9d8]"><span>✦</span> 旅程從一起準備開始</span>
+        <h1 id="hero-title" class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">把期待，整理成一場好露營。</h1>
+        <p class="mt-3 max-w-xl text-sm leading-6 text-[#d0ddd1] sm:text-base">行程、夥伴、車輛和裝備，一個頁面一起打理。內容會保存在這台裝置的瀏覽器裡。</p>
+        <a href="#overview" class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#e1ead9] px-4 text-sm font-semibold text-[#294738] transition hover:bg-white">開始規劃 <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="absolute bottom-7 right-9 hidden text-6xl opacity-20 sm:block" aria-hidden="true">🏕️</div>
+    </section>
+
+    <section class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="行程摘要">
+      <div class="section-card px-4 py-4"><p class="text-xs text-[#849086]">活動日期</p><p id="stat-date" class="mt-1 truncate text-base font-semibold">尚未設定</p></div>
+      <div class="section-card px-4 py-4"><p class="text-xs text-[#849086]">出發夥伴</p><p class="mt-1 text-base font-semibold"><span id="stat-people">0</span><span class="ml-1 text-sm font-normal text-[#849086]">人</span></p></div>
+      <div class="section-card px-4 py-4"><p class="text-xs text-[#849086]">規劃車輛</p><p class="mt-1 text-base font-semibold"><span id="stat-cars">0</span><span class="ml-1 text-sm font-normal text-[#849086]">台</span></p></div>
+      <div class="section-card px-4 py-4"><p class="text-xs text-[#849086]">準備進度</p><p class="mt-1 text-base font-semibold"><span id="stat-progress">0%</span><span class="ml-1 text-sm font-normal text-[#849086]">完成</span></p></div>
+    </section>
+
+    <div class="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div class="min-w-0 space-y-5">
+        <section id="overview" class="section-card scroll-mt-32 overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-4 sm:px-6">
+            <button type="button" data-accordion="overview" aria-controls="panel-overview" aria-expanded="true" class="flex min-h-12 min-w-0 flex-1 items-center gap-3 text-left">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#edf2e9] text-lg">🗺️</span>
+              <span class="min-w-0"><span class="block text-[11px] font-semibold uppercase tracking-[.16em] text-[#81917f]">01 · THE PLAN</span><span class="mt-0.5 block text-lg font-bold">行程總覽</span></span>
+              <span class="accordion-icon ml-auto text-lg text-[#81917f]" aria-hidden="true">⌄</span>
+            </button>
+          </div>
+          <div id="panel-overview" class="accordion-panel border-t border-[#edf0ea] px-4 sm:px-6">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="sm:col-span-2"><span class="label">活動名稱</span><input class="field" data-trip="name" placeholder="例如：秋日山林小旅行"></label>
+              <label><span class="label">露營日期</span><input type="date" class="field" data-trip="date"></label>
+              <label><span class="label">營地預計抵達時間</span><input type="time" class="field" data-trip="arrivalTime"></label>
+              <label class="sm:col-span-2"><span class="label">營地／野營地點（可貼上地點名稱或 Google Maps 連結）</span><input class="field" data-trip="location" placeholder="例如：新竹尖石露營區，或貼上地圖連結"></label>
+              <label><span class="label">預設緩衝時間（分鐘）</span><input type="number" min="0" step="5" class="field" data-trip="bufferMinutes" inputmode="numeric"></label>
+              <label class="sm:col-span-2"><span class="label">行前重要公告</span><textarea rows="3" class="field resize-y" data-trip="notice" placeholder="集合提醒、天氣備案、需要特別注意的事項…"></textarea></label>
+            </div>
+          </div>
+        </section>
+
+        <section id="people" class="section-card scroll-mt-32 overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-4 sm:px-6">
+            <button type="button" data-accordion="people" aria-controls="panel-people" aria-expanded="false" class="flex min-h-12 min-w-0 flex-1 items-center gap-3 text-left">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#f4eee5] text-lg">🧑‍🤝‍🧑</span>
+              <span class="min-w-0"><span class="block text-[11px] font-semibold uppercase tracking-[.16em] text-[#81917f]">02 · THE CREW</span><span class="mt-0.5 block text-lg font-bold">參加夥伴</span></span>
+              <span class="accordion-icon ml-auto text-lg text-[#81917f]" aria-hidden="true">⌄</span>
+            </button>
+            <button type="button" data-action="add-person" class="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-xl bg-[#527a50] px-3 text-xs font-semibold text-white hover:bg-[#426741] sm:px-3.5 sm:text-sm"><span class="text-lg leading-none">＋</span><span class="hidden sm:inline">新增夥伴</span><span class="sm:hidden">新增</span></button>
+          </div>
+          <div id="panel-people" class="accordion-panel border-t border-[#edf0ea] px-4 sm:px-6">
+            <div id="people-list" class="space-y-3"></div>
+            <p id="people-empty" class="hidden rounded-xl bg-[#f7f8f5] px-4 py-5 text-center text-sm text-[#8b958c]">還沒有夥伴，先新增一位同行者吧。</p>
+          </div>
+        </section>
+
+        <section id="transport" class="section-card scroll-mt-32 overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-4 sm:px-6">
+            <button type="button" data-accordion="transport" aria-controls="panel-transport" aria-expanded="false" class="flex min-h-12 min-w-0 flex-1 items-center gap-3 text-left">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#eaf0e5] text-lg">🚙</span>
+              <span class="min-w-0"><span class="block text-[11px] font-semibold uppercase tracking-[.16em] text-[#81917f]">03 · GETTING THERE</span><span class="mt-0.5 block text-lg font-bold">配車與交通</span></span>
+              <span class="accordion-icon ml-auto text-lg text-[#81917f]" aria-hidden="true">⌄</span>
+            </button>
+            <button type="button" data-action="add-car" class="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-xl bg-[#527a50] px-3 text-xs font-semibold text-white hover:bg-[#426741] sm:px-3.5 sm:text-sm"><span class="text-lg leading-none">＋</span><span class="hidden sm:inline">新增車輛</span><span class="sm:hidden">新增</span></button>
+          </div>
+          <div id="panel-transport" class="accordion-panel border-t border-[#edf0ea] px-4 sm:px-6">
+            <div id="cars-list" class="space-y-4"></div>
+            <p id="cars-empty" class="hidden rounded-xl bg-[#f7f8f5] px-4 py-5 text-center text-sm text-[#8b958c]">尚未安排車輛，新增車輛即可開始分配乘客。</p>
+          </div>
+        </section>
+
+        <section id="menu" class="section-card scroll-mt-32 overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-4 sm:px-6">
+            <button type="button" data-accordion="menu" aria-controls="panel-menu" aria-expanded="false" class="flex min-h-12 min-w-0 flex-1 items-center gap-3 text-left">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#f3eee1] text-lg">🥘</span>
+              <span class="min-w-0"><span class="block text-[11px] font-semibold uppercase tracking-[.16em] text-[#81917f]">04 · CAMP KITCHEN</span><span class="mt-0.5 block text-lg font-bold">菜單與採買</span></span>
+              <span class="accordion-icon ml-auto text-lg text-[#81917f]" aria-hidden="true">⌄</span>
+            </button>
+            <button type="button" data-action="add-menu" class="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-xl bg-[#527a50] px-3 text-xs font-semibold text-white hover:bg-[#426741] sm:px-3.5 sm:text-sm"><span class="text-lg leading-none">＋</span><span class="hidden sm:inline">新增餐點</span><span class="sm:hidden">新增</span></button>
+          </div>
+          <div id="panel-menu" class="accordion-panel border-t border-[#edf0ea] px-4 sm:px-6">
+            <div id="menu-list" class="space-y-3"></div>
+            <p id="menu-empty" class="hidden rounded-xl bg-[#f7f8f5] px-4 py-5 text-center text-sm text-[#8b958c]">菜單還空空的，來規劃第一道料理吧。</p>
+            <div id="menu-total-wrap" class="mt-4 hidden justify-end border-t border-[#edf0ea] pt-4 text-sm"><span class="text-[#7c887e]">採買預算合計</span><strong id="menu-total" class="ml-2 text-[#3e6946]"></strong></div>
+          </div>
+        </section>
+
+        <section id="gear" class="section-card scroll-mt-32 overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-4 sm:px-6">
+            <button type="button" data-accordion="gear" aria-controls="panel-gear" aria-expanded="false" class="flex min-h-12 min-w-0 flex-1 items-center gap-3 text-left">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#eeeaf2] text-lg">🎒</span>
+              <span class="min-w-0"><span class="block text-[11px] font-semibold uppercase tracking-[.16em] text-[#81917f]">05 · SHARED GEAR</span><span class="mt-0.5 block text-lg font-bold">公裝分配</span></span>
+              <span class="accordion-icon ml-auto text-lg text-[#81917f]" aria-hidden="true">⌄</span>
+            </button>
+            <div class="flex shrink-0 gap-1.5">
+              <button type="button" data-action="load-gear-template" class="min-h-10 rounded-xl border border-[#dfe5dc] bg-white px-2.5 text-[11px] font-semibold text-[#5b715b] hover:bg-[#f5f7f3] sm:px-3 sm:text-xs">載入模板</button>
+              <button type="button" data-action="add-gear" aria-label="新增公裝" class="grid h-10 w-10 place-items-center rounded-xl bg-[#527a50] text-lg font-semibold text-white hover:bg-[#426741]">＋</button>
+            </div>
+          </div>
+          <div id="panel-gear" class="accordion-panel border-t border-[#edf0ea] px-4 sm:px-6">
+            <div id="gear-list" class="space-y-3"></div>
+            <p id="gear-empty" class="hidden rounded-xl bg-[#f7f8f5] px-4 py-5 text-center text-sm text-[#8b958c]">還沒有公裝項目，可以載入常用模板快速開始。</p>
+          </div>
+        </section>
+
+        <section id="line-notice" class="section-card scroll-mt-32 overflow-hidden">
+          <div class="flex items-center gap-3 border-b border-[#edf0ea] px-5 py-5 sm:px-6">
+            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#e7f2e7] text-xl">📢</span>
+            <div><p class="text-[11px] font-semibold uppercase tracking-[.16em] text-[#81917f]">READY TO SHARE</p><h2 class="mt-0.5 text-lg font-bold">一鍵生成 LINE 揪團公告</h2></div>
+          </div>
+          <div class="p-4 sm:p-6">
+            <p class="mb-3 text-sm text-[#859087]">公告會隨目前行程的車輛、採買與公裝內容自動更新。</p>
+            <label class="sr-only" for="line-preview">LINE 揪團公告預覽</label>
+            <textarea id="line-preview" readonly rows="16" class="field resize-y bg-[#fbfcfa] font-mono text-sm leading-6" aria-label="LINE 揪團公告預覽"></textarea>
+            <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p class="text-xs text-[#8a958b]">複製後即可貼到 LINE 群組。</p>
+              <button type="button" data-action="copy-line" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#527a50] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#426741] active:scale-[.99]">📋 複製 LINE 公告</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-4 lg:sticky lg:top-24">
+        <section class="section-card overflow-hidden">
+          <div class="bg-[#eaf0e5] px-5 py-4"><p class="text-xs font-semibold uppercase tracking-[.14em] text-[#668064]">CAMP NOTE</p><h2 class="mt-1 font-bold">行前小提醒</h2></div>
+          <div class="space-y-3 p-5 text-sm leading-6 text-[#6e7c70]">
+            <p class="flex gap-2"><span class="text-[#71936b]">✦</span><span>確認營地規定、入營時間與天氣狀況。</span></p>
+            <p class="flex gap-2"><span class="text-[#71936b]">✦</span><span>出發前再次核對車位、食材與公裝清單。</span></p>
+            <p class="flex gap-2"><span class="text-[#71936b]">✦</span><span>垃圾帶下山，讓山林保持原本的樣子。</span></p>
+          </div>
+        </section>
+        <section class="rounded-2xl border border-[#e6e9e2] bg-[#fbfcf9] p-5">
+          <div class="flex items-center gap-2"><span class="text-lg">🔒</span><h2 class="text-sm font-bold">你的資料，由你掌握</h2></div>
+          <p class="mt-2 text-xs leading-5 text-[#849086]">所有行程資料只儲存在這個瀏覽器的 localStorage，不會同步到其他裝置。清除瀏覽器資料前，請先做好備份。</p>
+        </section>
+        <p class="px-1 text-center text-xs text-[#a0a9a0]">Made for slow mornings &amp; starry nights.</p>
+      </aside>
+    </div>
+  </main>
+  <div id="toast" role="status" aria-live="polite" class="pointer-events-none fixed bottom-5 left-1/2 z-50 hidden -translate-x-1/2 rounded-xl bg-[#294738] px-4 py-3 text-sm font-medium text-white shadow-lg"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "zeocamp-hub-projects-v2";
+      const LEGACY_STORAGE_KEY = "zeocamp-hub-data-v1";
+      const SEED_PROJECT_ID = "zeocamp-provided-trip-2026-v1";
+      const SECTION_IDS = ["overview", "people", "transport", "menu", "gear"];
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+      const makeId = () => window.crypto && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+      const defaultData = () => ({
+        trip: { name: "", date: "", location: "", arrivalTime: "10:30", bufferMinutes: 20, notice: "" },
+        people: [], cars: [], menu: [], gear: []
+      });
+
+      function providedTripData() {
+        const people = [
+          "阿葉", "安里", "ruru", "燦哥", "Tina", "小雨",
+          "Mina", "SONIC", "小柚", "YC", "派派", "小夏"
+        ].map((name) => ({ id: makeId(), name, diet: "", confirmed: false }));
+        const personId = (name) => people.find((person) => person.name.toLowerCase() === name.toLowerCase()).id;
+        const makeCar = (names) => ({
+          id: makeId(),
+          ownerId: personId(names[0]),
+          vehicle: "",
+          seats: 4,
+          passengerIds: names.map(personId),
+          meetingPoint: "",
+          travelMinutes: "",
+          meetingTime: ""
+        });
+
+        return {
+          trip: {
+            name: "這次露營行程",
+            date: "",
+            location: "https://maps.app.goo.gl/DVbNpmeggShieo7n6?g_st=ic",
+            arrivalTime: "10:30",
+            bufferMinutes: 20,
+            notice: "出發前請各車確認集合時間，並核對採買與公裝清單。"
+          },
+          people,
+          cars: [
+            makeCar(["阿葉", "安里"]),
+            makeCar(["ruru", "燦哥"]),
+            makeCar(["小柚", "Tina", "小雨"]),
+            makeCar(["SONIC", "Mina"]),
+            makeCar(["YC", "小夏", "派派"])
+          ],
+          menu: [
+            {
+              id: makeId(), meal: "週六晚餐", dish: "戶外烤肉",
+              ingredients: "豬肉、牛肉、雞翅、蝦、香腸、玉米、菇類、青椒、吐司、烤肉醬、木炭",
+              buyerId: "", cost: "", purchased: false
+            },
+            {
+              id: makeId(), meal: "週六晚餐", dish: "薑母鴨火鍋",
+              ingredients: "薑母鴨鍋底、高麗菜、菇類、豆腐、米血糕、凍豆腐、麵線",
+              buyerId: "", cost: "", purchased: false
+            },
+            {
+              id: makeId(), meal: "週日早餐", dish: "簡單早餐",
+              ingredients: "吐司、雞蛋、火腿、牛奶、咖啡、果醬、水果",
+              buyerId: "", cost: "", purchased: false
+            },
+            {
+              id: makeId(), meal: "採買清單", dish: "大賣場採買",
+              ingredients: "飲用水、飲料、冰塊、衛生紙、垃圾袋、烤肉醬、木炭",
+              buyerId: "", cost: "", purchased: false
+            },
+            {
+              id: makeId(), meal: "採買清單", dish: "好市多採買",
+              ingredients: "烤肉肉品、雞翅、香腸、蝦、吐司、牛奶、咖啡",
+              buyerId: "", cost: "", purchased: false
+            },
+            {
+              id: makeId(), meal: "採買清單", dish: "市場採買",
+              ingredients: "高麗菜、菇類、青椒、玉米、豆腐、米血糕、水果",
+              buyerId: "", cost: "", purchased: false
+            }
+          ],
+          gear: [
+            { id: makeId(), name: "天幕", quantity: 1, personId: personId("阿葉"), loaded: false },
+            { id: makeId(), name: "營柱、營釘", quantity: 1, personId: personId("阿葉"), loaded: false },
+            { id: makeId(), name: "折疊桌", quantity: 1, personId: personId("Tina"), loaded: false },
+            { id: makeId(), name: "露營椅", quantity: 4, personId: personId("Tina"), loaded: false },
+            { id: makeId(), name: "卡式爐", quantity: 1, personId: personId("小雨"), loaded: false },
+            { id: makeId(), name: "瓦斯罐", quantity: 4, personId: personId("小雨"), loaded: false },
+            { id: makeId(), name: "鍋具組", quantity: 1, personId: personId("Mina"), loaded: false },
+            { id: makeId(), name: "焚火台", quantity: 1, personId: personId("YC"), loaded: false },
+            { id: makeId(), name: "營燈", quantity: 2, personId: personId("小夏"), loaded: false },
+            { id: makeId(), name: "延長線", quantity: 1, personId: personId("Mina"), loaded: false },
+            { id: makeId(), name: "保冷箱", quantity: 1, personId: personId("派派"), loaded: false }
+          ]
+        };
+      }
+
+      function normalizeData(data) {
+        const base = defaultData();
+        return {
+          trip: { ...base.trip, ...(data && data.trip && typeof data.trip === "object" ? data.trip : {}) },
+          people: Array.isArray(data && data.people) ? data.people : [],
+          cars: Array.isArray(data && data.cars) ? data.cars : [],
+          menu: Array.isArray(data && data.menu) ? data.menu : [],
+          gear: Array.isArray(data && data.gear) ? data.gear : []
+        };
+      }
+
+      function createProject(name, data = defaultData()) {
+        const projectData = normalizeData(data);
+        if (name && !projectData.trip.name) projectData.trip.name = name;
+        return { id: makeId(), name: name || projectData.trip.name || "未命名行程", data: projectData };
+      }
+
+      function isPristineProject(project) {
+        if (!project) return true;
+        const data = normalizeData(project.data);
+        const trip = data.trip;
+        const nameIsDefault = !trip.name || trip.name === "我的露營行程" || trip.name === "未命名行程";
+        return nameIsDefault && !trip.date && !trip.location && !trip.notice &&
+          trip.arrivalTime === "10:30" && Number(trip.bufferMinutes) === 20 &&
+          data.people.length === 0 && data.cars.length === 0 && data.menu.length === 0 && data.gear.length === 0;
+      }
+
+      function addProvidedTrip(store) {
+        if (store.projects.some((project) => project.id === SEED_PROJECT_ID)) return store;
+        const previousActive = store.projects.find((project) => project.id === store.activeId);
+        const seedProject = {
+          id: SEED_PROJECT_ID,
+          name: "這次露營行程",
+          data: providedTripData()
+        };
+
+        if (store.projects.length === 1 && isPristineProject(previousActive)) {
+          store.projects = [seedProject];
+          store.activeId = seedProject.id;
+          return store;
+        }
+
+        store.projects.push(seedProject);
+        if (isPristineProject(previousActive)) store.activeId = seedProject.id;
+        return store;
+      }
+
+      // Storage adapter is isolated from UI state so it can be replaced by a Firebase adapter later.
+      const dataStore = {
+        load() {
+          const current = localStorage.getItem(STORAGE_KEY);
+          if (current) {
+            const parsed = JSON.parse(current);
+            if (parsed && Array.isArray(parsed.projects) && parsed.projects.length) {
+              const projects = parsed.projects.map((project) => ({
+                id: project.id || makeId(),
+                name: project.name || (project.data && project.data.trip && project.data.trip.name) || "未命名行程",
+                data: normalizeData(project.data)
+              }));
+              const activeId = projects.some((project) => project.id === parsed.activeId) ? parsed.activeId : projects[0].id;
+              return addProvidedTrip({ activeId, projects });
+            }
+          }
+
+          const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+          if (legacy) {
+            const migratedProject = createProject("我的露營行程", normalizeData(JSON.parse(legacy)));
+            return addProvidedTrip({ activeId: migratedProject.id, projects: [migratedProject] });
+          }
+          const firstProject = {
+            id: SEED_PROJECT_ID,
+            name: "這次露營行程",
+            data: providedTripData()
+          };
+          return { activeId: firstProject.id, projects: [firstProject] };
+        },
+        save(value) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+        }
+      };
+
+      let store;
+      let activeProject;
+      let state;
+      let toastTimer;
+      let openSections = new Set(["overview"]);
+
+      function persist() {
+        try {
+          activeProject.data = state;
+          activeProject.name = state.trip.name.trim() || "未命名行程";
+          dataStore.save(store);
+          updateSummary();
+          renderProjectSelect();
+          updateLinePreview();
+          renderAccordions();
+        } catch (error) {
+          console.error("無法儲存 ZeoCamp-Hub 資料：", error);
+          notify("儲存失敗，請確認瀏覽器儲存空間是否可用。", true);
+        }
+      }
+
+      function notify(message, isError = false) {
+        const toast = $("#toast");
+        toast.textContent = message;
+        toast.className = `toast pointer-events-none fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl px-4 py-3 text-sm font-medium text-white shadow-lg ${isError ? "bg-[#9b493e]" : "bg-[#294738]"}`;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.add("hidden"), 2800);
+      }
+
+      function activePersonName(id) {
+        const person = state.people.find((item) => item.id === id);
+        return person ? (person.name.trim() || "未命名夥伴") : "尚未指派";
+      }
+
+      function personOptions(selectedId) {
+        return `<option value="">尚未指派</option>${state.people.map((person) =>
+          `<option value="${escapeHtml(person.id)}" ${person.id === selectedId ? "selected" : ""}>${escapeHtml(person.name || "未命名夥伴")}</option>`
+        ).join("")}`;
+      }
+
+      function renderProjectSelect() {
+        const select = $("#project-select");
+        select.innerHTML = store.projects.map((project) =>
+          `<option value="${escapeHtml(project.id)}" ${project.id === store.activeId ? "selected" : ""}>${escapeHtml(project.data.trip.name || project.name || "未命名行程")}</option>`
+        ).join("");
+      }
+
+      function renderTripInputs() {
+        $$("[data-trip]").forEach((input) => { input.value = state.trip[input.dataset.trip] ?? ""; });
+        $("#hero-title").textContent = state.trip.name.trim() || "把期待，整理成一場好露營。";
+      }
+
+      function updateSummary() {
+        $("#stat-date").textContent = state.trip.date
+          ? new Date(`${state.trip.date}T00:00:00`).toLocaleDateString("zh-TW", { month: "short", day: "numeric" })
+          : "尚未設定";
+        $("#stat-people").textContent = state.people.length;
+        $("#stat-cars").textContent = state.cars.length;
+        const tasks = [
+          ...state.people.map((person) => person.confirmed),
+          ...state.menu.map((item) => item.purchased),
+          ...state.gear.map((item) => item.loaded)
+        ];
+        $("#stat-progress").textContent = `${tasks.length ? Math.round(tasks.filter(Boolean).length / tasks.length * 100) : 0}%`;
+      }
+
+      function renderPeople() {
+        $("#people-empty").classList.toggle("hidden", state.people.length > 0);
+        $("#people-list").innerHTML = state.people.map((person, index) => `
+          <article class="rounded-xl border border-[#edf0ea] bg-[#fbfcfa] p-4">
+            <div class="mb-3 flex items-center justify-between">
+              <span class="text-xs font-semibold text-[#9aa49a]">夥伴 ${String(index + 1).padStart(2, "0")}</span>
+              <button type="button" data-action="delete-person" data-id="${escapeHtml(person.id)}" aria-label="刪除夥伴" class="grid h-9 w-9 place-items-center rounded-lg text-[#9ca69c] hover:bg-[#f8eae7] hover:text-[#aa5348]">✕</button>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-[minmax(0,.8fr)_minmax(0,1.5fr)_auto] sm:items-end">
+              <label><span class="label">成員姓名</span><input class="field" data-entity="people" data-id="${escapeHtml(person.id)}" data-field="name" value="${escapeHtml(person.name)}" placeholder="輸入姓名"></label>
+              <label><span class="label">飲食禁忌／過敏原</span><input class="field" data-entity="people" data-id="${escapeHtml(person.id)}" data-field="diet" value="${escapeHtml(person.diet)}" placeholder="例如：素食、花生過敏"></label>
+              <label class="flex min-h-10 cursor-pointer items-center gap-2 text-sm text-[#657367]"><input type="checkbox" data-entity="people" data-id="${escapeHtml(person.id)}" data-field="confirmed" ${person.confirmed ? "checked" : ""}>確認出發</label>
+            </div>
+          </article>`).join("");
+      }
+
+      function departureMinutes(car) {
+        const arrival = (state.trip.arrivalTime || "10:30").split(":").map(Number);
+        const arrivalValue = (arrival[0] || 0) * 60 + (arrival[1] || 0);
+        const departure = arrivalValue - (Number(car.travelMinutes) || 0) - (Number(state.trip.bufferMinutes) || 0);
+        return ((departure % 1440) + 1440) % 1440;
+      }
+
+      function formatTime(totalMinutes) {
+        return `${Math.floor(totalMinutes / 60).toString().padStart(2, "0")}:${(totalMinutes % 60).toString().padStart(2, "0")}`;
+      }
+
+      function mapsUrl(car) {
+        const url = new URL("https://www.google.com/maps/dir/");
+        url.searchParams.set("api", "1");
+        url.searchParams.set("origin", car.meetingPoint || "");
+        url.searchParams.set("destination", state.trip.location || "");
+        url.searchParams.set("travelmode", "driving");
+        return url.toString();
+      }
+
+      function renderCars() {
+        $("#cars-empty").classList.toggle("hidden", state.cars.length > 0);
+        $("#cars-list").innerHTML = state.cars.map((car, index) => {
+          const passengers = Array.isArray(car.passengerIds) ? car.passengerIds : [];
+          const occupied = passengers.filter((id) => state.people.some((person) => person.id === id)).length;
+          const seats = Math.max(0, Number(car.seats) || 0);
+          const passengerChoices = state.people.length
+            ? state.people.map((person) => `
+              <label class="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-[#edf0ea] bg-white px-3 text-sm text-[#5f6e62] hover:border-[#cbd8c8]">
+                <input type="checkbox" data-car-passenger="${escapeHtml(car.id)}" data-person-id="${escapeHtml(person.id)}" ${passengers.includes(person.id) ? "checked" : ""}>
+                <span class="truncate">${escapeHtml(person.name || "未命名夥伴")}</span>
+              </label>`).join("")
+            : '<p class="col-span-full rounded-lg bg-white px-3 py-3 text-xs text-[#929c92]">先新增參加夥伴，才能分配乘客。</p>';
+          return `
+            <article class="rounded-2xl border border-[#e9ede6] bg-[#fbfcfa] p-4 sm:p-5" data-car-card="${escapeHtml(car.id)}">
+              <div class="mb-4 flex items-center justify-between">
+                <div class="flex items-center gap-2"><span class="grid h-8 w-8 place-items-center rounded-lg bg-[#edf2e9]">🚙</span><span class="font-semibold">車輛 ${index + 1}</span></div>
+                <button type="button" data-action="delete-car" data-id="${escapeHtml(car.id)}" aria-label="刪除此車輛" class="grid h-9 w-9 place-items-center rounded-lg text-[#9ca69c] hover:bg-[#f8eae7] hover:text-[#aa5348]">✕</button>
+              </div>
+              <div class="grid gap-3 sm:grid-cols-2">
+                <label><span class="label">車主</span><select class="field" data-entity="cars" data-id="${escapeHtml(car.id)}" data-field="ownerId">${personOptions(car.ownerId)}</select></label>
+                <label><span class="label">車型</span><input class="field" data-entity="cars" data-id="${escapeHtml(car.id)}" data-field="vehicle" value="${escapeHtml(car.vehicle)}" placeholder="例如：休旅車"></label>
+                <label><span class="label">總座位數（含駕駛）</span><input type="number" min="1" max="30" class="field" data-entity="cars" data-id="${escapeHtml(car.id)}" data-field="seats" value="${escapeHtml(car.seats)}" inputmode="numeric"></label>
+                <label><span class="label">集合點（可貼上地點名稱或 Google Maps 連結）</span><input class="field" data-entity="cars" data-id="${escapeHtml(car.id)}" data-field="meetingPoint" value="${escapeHtml(car.meetingPoint)}" placeholder="例如：板橋車站"></label>
+              </div>
+              <div class="mt-4">
+                <div class="mb-2 flex items-center justify-between gap-2">
+                  <span class="label mb-0">乘客名單（勾選搭乘此車的夥伴）</span>
+                  <span class="shrink-0 rounded-full bg-[#eaf0e5] px-2.5 py-1 text-xs font-semibold text-[#557352]"><span data-car-occupied="${escapeHtml(car.id)}">${occupied}</span> / <span data-car-seats="${escapeHtml(car.id)}">${seats}</span> 人・剩餘 <span data-car-remaining="${escapeHtml(car.id)}">${Math.max(0, seats - occupied)}</span> 位</span>
+                </div>
+                <div class="grid gap-2 sm:grid-cols-2">${passengerChoices}</div>
+              </div>
+              <div class="mt-4 rounded-xl border border-[#e7ebe3] bg-white p-4">
+                <div class="grid gap-3 sm:grid-cols-2">
+                  <label><span class="label">預估車程（分鐘；參考 Maps 行車時間）</span><input type="number" min="0" class="field" data-entity="cars" data-id="${escapeHtml(car.id)}" data-field="travelMinutes" value="${escapeHtml(car.travelMinutes)}" placeholder="例如：90" inputmode="numeric"></label>
+                  <label><span class="label">實際約定集合時間</span><input type="time" class="field" data-entity="cars" data-id="${escapeHtml(car.id)}" data-field="meetingTime" value="${escapeHtml(car.meetingTime)}"></label>
+                </div>
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#f2f5ef] px-3 py-2.5">
+                  <p class="text-sm text-[#5f725f]">建議 <strong data-car-suggested="${escapeHtml(car.id)}" class="text-[#365e3c]">${formatTime(departureMinutes(car))}</strong> 從集合點出發</p>
+                  <button type="button" data-action="apply-departure" data-id="${escapeHtml(car.id)}" class="min-h-9 rounded-lg border border-[#d7e1d3] bg-white px-3 text-xs font-semibold text-[#4c714a] hover:bg-[#e8efe5]">套用為集合時間</button>
+                </div>
+              </div>
+              <a data-map-link="${escapeHtml(car.id)}" href="${mapsUrl(car)}" target="_blank" rel="noopener noreferrer" class="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#dfe6dc] bg-white text-sm font-semibold text-[#527a50] hover:bg-[#f3f6f0]">↗ 開啟 Google Maps 行車路線</a>
+            </article>`;
+        }).join("");
+      }
+
+      function renderMenu() {
+        $("#menu-empty").classList.toggle("hidden", state.menu.length > 0);
+        const mealOptions = ["週六晚餐", "週日早餐", "採買清單", "Day 1 晚餐", "Day 2 早餐", "Day 2 午餐", "Day 2 晚餐", "宵夜／酒水", "其他"];
+        $("#menu-list").innerHTML = state.menu.map((item) => `
+          <article class="rounded-xl border border-[#edf0ea] bg-[#fbfcfa] p-4">
+            <div class="mb-3 flex items-center justify-between">
+              <span class="rounded-full bg-[#f1eee4] px-2.5 py-1 text-xs font-medium text-[#86774e]">${escapeHtml(item.meal || "餐點")}</span>
+              <button type="button" data-action="delete-menu" data-id="${escapeHtml(item.id)}" aria-label="刪除此餐點" class="grid h-9 w-9 place-items-center rounded-lg text-[#9ca69c] hover:bg-[#f8eae7] hover:text-[#aa5348]">✕</button>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label><span class="label">餐別</span><select class="field" data-entity="menu" data-id="${escapeHtml(item.id)}" data-field="meal">${mealOptions.map((meal) => `<option ${item.meal === meal ? "selected" : ""}>${meal}</option>`).join("")}</select></label>
+              <label><span class="label">菜名／品項</span><input class="field" data-entity="menu" data-id="${escapeHtml(item.id)}" data-field="dish" value="${escapeHtml(item.dish)}" placeholder="例如：番茄燉牛肉"></label>
+              <label class="sm:col-span-2"><span class="label">所需食材</span><textarea rows="2" class="field resize-y" data-entity="menu" data-id="${escapeHtml(item.id)}" data-field="ingredients" placeholder="列出食材與大約份量">${escapeHtml(item.ingredients)}</textarea></label>
+              <label><span class="label">採買負責人</span><select class="field" data-entity="menu" data-id="${escapeHtml(item.id)}" data-field="buyerId">${personOptions(item.buyerId)}</select></label>
+              <label><span class="label">預估金額（選填）</span><span class="relative block"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#8b958c]">$</span><input type="number" min="0" class="field pl-7" data-entity="menu" data-id="${escapeHtml(item.id)}" data-field="cost" value="${escapeHtml(item.cost)}" placeholder="0" inputmode="decimal"></span></label>
+              <label class="flex min-h-10 cursor-pointer items-center gap-2 text-sm text-[#657367]"><input type="checkbox" data-entity="menu" data-id="${escapeHtml(item.id)}" data-field="purchased" ${item.purchased ? "checked" : ""}>已完成採買</label>
+            </div>
+          </article>`).join("");
+        const total = state.menu.reduce((sum, item) => sum + (Number(item.cost) || 0), 0);
+        $("#menu-total").textContent = `$${total.toLocaleString("zh-TW")}`;
+        $("#menu-total-wrap").classList.toggle("hidden", state.menu.length === 0);
+        $("#menu-total-wrap").classList.toggle("flex", state.menu.length > 0);
+      }
+
+      function renderGear() {
+        $("#gear-empty").classList.toggle("hidden", state.gear.length > 0);
+        $("#gear-list").innerHTML = state.gear.map((item) => `
+          <article class="grid gap-3 rounded-xl border border-[#edf0ea] bg-[#fbfcfa] p-4 sm:grid-cols-[minmax(0,1.3fr)_90px_minmax(0,1fr)_auto_auto] sm:items-end">
+            <label><span class="label">裝備名稱</span><input class="field" data-entity="gear" data-id="${escapeHtml(item.id)}" data-field="name" value="${escapeHtml(item.name)}" placeholder="例如：天幕"></label>
+            <label><span class="label">數量</span><input type="number" min="1" class="field" data-entity="gear" data-id="${escapeHtml(item.id)}" data-field="quantity" value="${escapeHtml(item.quantity)}" inputmode="numeric"></label>
+            <label><span class="label">攜帶負責人</span><select class="field" data-entity="gear" data-id="${escapeHtml(item.id)}" data-field="personId">${personOptions(item.personId)}</select></label>
+            <label class="flex min-h-10 cursor-pointer items-center gap-2 text-sm text-[#657367]"><input type="checkbox" data-entity="gear" data-id="${escapeHtml(item.id)}" data-field="loaded" ${item.loaded ? "checked" : ""}>已上車</label>
+            <button type="button" data-action="delete-gear" data-id="${escapeHtml(item.id)}" aria-label="刪除此裝備" class="grid h-10 w-10 place-items-center rounded-lg text-[#9ca69c] hover:bg-[#f8eae7] hover:text-[#aa5348]">✕</button>
+          </article>`).join("");
+      }
+
+      function announcementText() {
+        const lines = [
+          `🏕️ ${state.trip.name.trim() || "露營揪團公告"}`,
+          state.trip.date ? `📅 日期：${state.trip.date}` : "",
+          state.trip.location ? `📍 營地：${state.trip.location}` : "",
+          state.trip.arrivalTime ? `⏰ 預計抵達：${state.trip.arrivalTime}` : ""
+        ].filter(Boolean);
+
+        if (state.trip.notice && state.trip.notice.trim()) lines.push(`\n📣 行前提醒\n${state.trip.notice.trim()}`);
+
+        if (state.cars.length) {
+          lines.push("\n🚗 集合與交通");
+          state.cars.forEach((car, index) => {
+            const passengerNames = (car.passengerIds || [])
+              .map((id) => state.people.find((person) => person.id === id))
+              .filter(Boolean)
+              .map((person) => person.name.trim() || "未命名夥伴");
+            const heading = `・車 ${index + 1}${car.vehicle ? `（${car.vehicle}）` : ""}${car.ownerId ? `｜車主：${activePersonName(car.ownerId)}` : ""}`;
+            const details = [
+              car.meetingPoint ? `集合點 ${car.meetingPoint}` : "",
+              car.meetingTime ? `集合時間 ${car.meetingTime}` : (car.travelMinutes ? `建議 ${formatTime(departureMinutes(car))} 出發` : ""),
+              passengerNames.length ? `乘客 ${passengerNames.join("、")}` : ""
+            ].filter(Boolean);
+            lines.push(heading);
+            if (details.length) lines.push(`  ${details.join("｜")}`);
+          });
+        }
+
+        if (state.menu.length) {
+          lines.push("\n🛒 菜單與採買");
+          state.menu.forEach((item) => {
+            const details = [item.ingredients ? `食材：${item.ingredients}` : "", item.buyerId ? `負責：${activePersonName(item.buyerId)}` : ""].filter(Boolean);
+            lines.push(`・${item.purchased ? "✅" : "⬜"} ${item.meal || "餐點"}｜${item.dish || "未命名品項"}${item.cost !== "" && item.cost != null ? `（$${Number(item.cost) || 0}）` : ""}`);
+            if (details.length) lines.push(`  ${details.join("｜")}`);
+          });
+        }
+
+        if (state.gear.length) {
+          lines.push("\n🎒 公裝分配");
+          state.gear.forEach((item) => {
+            lines.push(`・${item.loaded ? "✅" : "⬜"} ${item.name || "未命名裝備"} × ${Number(item.quantity) || 1}${item.personId ? `｜${activePersonName(item.personId)}攜帶` : ""}`);
+          });
+        }
+        lines.push("\n期待和大家一起出發！🌿");
+        return lines.join("\n");
+      }
+
+      function updateLinePreview() {
+        $("#line-preview").value = announcementText();
+      }
+
+      function renderAll() {
+        renderTripInputs();
+        renderPeople();
+        renderCars();
+        renderMenu();
+        renderGear();
+        updateSummary();
+        updateLinePreview();
+        renderProjectSelect();
+        renderAccordions();
+      }
+
+      function renderAccordions() {
+        SECTION_IDS.forEach((id) => {
+          const button = $(`[data-accordion="${id}"]`);
+          const panel = $(`#panel-${id}`);
+          const isOpen = openSections.has(id);
+          button.setAttribute("aria-expanded", String(isOpen));
+          panel.classList.toggle("is-open", isOpen);
+          panel.inert = !isOpen;
+          panel.setAttribute("aria-hidden", String(!isOpen));
+          panel.style.setProperty("padding-top", isOpen ? "1.25rem" : "0px", "important");
+          panel.style.setProperty("padding-bottom", isOpen ? (window.matchMedia("(min-width: 640px)").matches ? "1.5rem" : "1.25rem") : "0px", "important");
+          panel.style.setProperty("border-top-width", isOpen ? "1px" : "0px", "important");
+          panel.style.maxHeight = isOpen ? `${panel.scrollHeight}px` : "0px";
+          $(".accordion-icon", button).textContent = isOpen ? "⌃" : "⌄";
+        });
+      }
+
+      window.addEventListener("resize", renderAccordions);
+
+      function refreshCarLive(carId) {
+        const car = state.cars.find((item) => item.id === carId);
+        const card = $(`[data-car-card="${CSS.escape(carId)}"]`);
+        if (!car || !card) return;
+        const occupied = (car.passengerIds || []).filter((id) => state.people.some((person) => person.id === id)).length;
+        const seats = Math.max(0, Number(car.seats) || 0);
+        $(`[data-car-occupied="${CSS.escape(carId)}"]`, card).textContent = occupied;
+        $(`[data-car-seats="${CSS.escape(carId)}"]`, card).textContent = seats;
+        $(`[data-car-remaining="${CSS.escape(carId)}"]`, card).textContent = Math.max(0, seats - occupied);
+        $(`[data-car-suggested="${CSS.escape(carId)}"]`, card).textContent = formatTime(departureMinutes(car));
+        $(`[data-map-link="${CSS.escape(carId)}"]`, card).href = mapsUrl(car);
+      }
+
+      function addRecord(collection, value) {
+        state[collection].push({ id: makeId(), ...value });
+        persist();
+        renderAll();
+      }
+
+      function removeRecord(collection, id) {
+        state[collection] = state[collection].filter((item) => item.id !== id);
+        if (collection === "people") {
+          state.cars.forEach((car) => {
+            car.passengerIds = (car.passengerIds || []).filter((personId) => personId !== id);
+            if (car.ownerId === id) car.ownerId = "";
+          });
+          state.menu.forEach((item) => { if (item.buyerId === id) item.buyerId = ""; });
+          state.gear.forEach((item) => { if (item.personId === id) item.personId = ""; });
+        }
+        persist();
+        renderAll();
+      }
+
+      function addProject() {
+        const nextNumber = store.projects.length + 1;
+        const project = createProject(`新露營行程 ${nextNumber}`);
+        store.projects.push(project);
+        store.activeId = project.id;
+        activeProject = project;
+        state = project.data;
+        openSections = new Set(["overview"]);
+        persist();
+        renderAll();
+        $("#overview").scrollIntoView({ behavior: "smooth", block: "start" });
+        $$('[data-trip="name"]')[0].focus();
+        notify("已建立新行程，記得填上活動名稱。");
+      }
+
+      function activateProject(projectId) {
+        const nextProject = store.projects.find((project) => project.id === projectId);
+        if (!nextProject) return;
+        store.activeId = projectId;
+        activeProject = nextProject;
+        state = activeProject.data;
+        openSections = new Set(["overview"]);
+        try {
+          dataStore.save(store);
+        } catch (error) {
+          console.error("無法儲存行程切換：", error);
+          notify("行程切換成功，但無法儲存切換狀態。", true);
+        }
+        renderAll();
+      }
+
+      async function copyAnnouncement() {
+        const text = announcementText();
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const temporary = document.createElement("textarea");
+            temporary.value = text;
+            temporary.setAttribute("readonly", "");
+            temporary.style.position = "fixed";
+            temporary.style.opacity = "0";
+            document.body.appendChild(temporary);
+            temporary.select();
+            const copied = document.execCommand("copy");
+            temporary.remove();
+            if (!copied) throw new Error("瀏覽器未能執行剪貼簿複製");
+          }
+          notify("已複製成功！");
+        } catch (error) {
+          console.error("無法複製 LINE 公告：", error);
+          notify("複製失敗，請手動選取公告文字複製。", true);
+        }
+      }
+
+      function handleAction(button) {
+        const id = button.dataset.id;
+        switch (button.dataset.action) {
+          case "add-project":
+            addProject();
+            break;
+          case "add-person":
+            openSections.add("people");
+            addRecord("people", { name: "", diet: "", confirmed: false });
+            renderAccordions();
+            break;
+          case "delete-person":
+            removeRecord("people", id);
+            break;
+          case "add-car":
+            openSections.add("transport");
+            addRecord("cars", { ownerId: "", vehicle: "", seats: 4, passengerIds: [], meetingPoint: "", travelMinutes: "", meetingTime: "" });
+            break;
+          case "delete-car":
+            removeRecord("cars", id);
+            break;
+          case "apply-departure": {
+            const car = state.cars.find((item) => item.id === id);
+            if (!car) return;
+            car.meetingTime = formatTime(departureMinutes(car));
+            persist();
+            renderCars();
+            updateLinePreview();
+            notify(`已套用建議集合時間 ${car.meetingTime}`);
+            break;
+          }
+          case "add-menu":
+            openSections.add("menu");
+            addRecord("menu", { meal: "Day 1 晚餐", dish: "", ingredients: "", buyerId: "", cost: "", purchased: false });
+            break;
+          case "delete-menu":
+            removeRecord("menu", id);
+            break;
+          case "add-gear":
+            openSections.add("gear");
+            addRecord("gear", { name: "", quantity: 1, personId: "", loaded: false });
+            break;
+          case "delete-gear":
+            removeRecord("gear", id);
+            break;
+          case "load-gear-template": {
+            const defaults = [
+              ["天幕", 1], ["營柱營釘", 1], ["焚火台", 1], ["炊具組", 1],
+              ["營燈", 2], ["延長線", 1], ["露營椅", 1], ["折疊桌", 1],
+              ["睡墊／充氣床", 1], ["急救包", 1]
+            ];
+            const existing = new Set(state.gear.map((item) => item.name.trim()));
+            const added = defaults.filter(([name]) => !existing.has(name))
+              .map(([name, quantity]) => ({ id: makeId(), name, quantity, personId: "", loaded: false }));
+            if (!added.length) {
+              notify("常用公裝已經都在清單裡了。");
+              break;
+            }
+            openSections.add("gear");
+            state.gear.push(...added);
+            persist();
+            renderAll();
+            notify(`已加入 ${added.length} 項常用公裝`);
+            break;
+          }
+          case "copy-line":
+            copyAnnouncement();
+            break;
+        }
+      }
+
+      function updatePersonLabels() {
+        $$("[data-car-passenger]").forEach((checkbox) => {
+          const person = state.people.find((item) => item.id === checkbox.dataset.personId);
+          const label = checkbox.closest("label");
+          if (person && label) $("span", label).textContent = person.name.trim() || "未命名夥伴";
+        });
+        $$('select[data-entity][data-field="ownerId"], select[data-entity][data-field="buyerId"], select[data-entity][data-field="personId"]').forEach((select) => {
+          const selected = select.value;
+          select.innerHTML = personOptions(selected);
+        });
+      }
+
+      function updateControl(control) {
+        const tripKey = control.dataset.trip;
+        if (tripKey) {
+          state.trip[tripKey] = tripKey === "bufferMinutes"
+            ? Math.max(0, Number(control.value) || 0)
+            : control.value;
+          if (tripKey === "name") {
+            activeProject.name = state.trip.name.trim() || "未命名行程";
+            $("#hero-title").textContent = state.trip.name.trim() || "把期待，整理成一場好露營。";
+          }
+          persist();
+          if (["arrivalTime", "bufferMinutes", "location"].includes(tripKey)) state.cars.forEach((car) => refreshCarLive(car.id));
+          return;
+        }
+
+        if (control.dataset.carPassenger) {
+          const car = state.cars.find((item) => item.id === control.dataset.carPassenger);
+          if (!car) return;
+          const selected = new Set(car.passengerIds || []);
+          if (control.checked) selected.add(control.dataset.personId);
+          else selected.delete(control.dataset.personId);
+          car.passengerIds = Array.from(selected);
+          persist();
+          refreshCarLive(car.id);
+          return;
+        }
+
+        const { entity, id, field } = control.dataset;
+        if (!entity || !id || !field) return;
+        const record = state[entity].find((item) => item.id === id);
+        if (!record) return;
+        let value = control.type === "checkbox" ? control.checked : control.value;
+        if (["seats", "travelMinutes", "cost", "quantity"].includes(field) && value !== "") value = Number(value);
+        record[field] = value;
+        persist();
+
+        if (entity === "cars") refreshCarLive(id);
+        if (entity === "menu") {
+          $("#menu-total").textContent = `$${state.menu.reduce((sum, item) => sum + (Number(item.cost) || 0), 0).toLocaleString("zh-TW")}`;
+        }
+        if (entity === "people" && field === "name") updatePersonLabels();
+      }
+
+      document.addEventListener("click", (event) => {
+        const accordionButton = event.target.closest("[data-accordion]");
+        if (accordionButton) {
+          const sectionId = accordionButton.dataset.accordion;
+          if (openSections.has(sectionId)) openSections.delete(sectionId);
+          else openSections.add(sectionId);
+          renderAccordions();
+          return;
+        }
+        const actionButton = event.target.closest("[data-action]");
+        if (actionButton) handleAction(actionButton);
+      });
+
+      document.addEventListener("input", (event) => {
+        const control = event.target;
+        if (control.matches("[data-trip], [data-entity]") && control.type !== "checkbox" && control.tagName !== "SELECT") updateControl(control);
+      });
+
+      document.addEventListener("change", (event) => {
+        const control = event.target;
+        if (control.matches("[data-trip], [data-entity], [data-car-passenger]")) {
+          if (control.type === "checkbox" || control.tagName === "SELECT") updateControl(control);
+        }
+      });
+
+      $("#project-select").addEventListener("change", (event) => activateProject(event.target.value));
+
+      try {
+        store = dataStore.load();
+        const initialProject = store.projects.find((project) => project.id === store.activeId) || store.projects[0];
+        store.activeId = initialProject.id;
+        activeProject = initialProject;
+        state = activeProject.data;
+        dataStore.save(store);
+        renderAll();
+      } catch (error) {
+        console.error("無法讀取 ZeoCamp-Hub 資料：", error);
+        activeProject = createProject("我的露營行程");
+        store = { activeId: activeProject.id, projects: [activeProject] };
+        state = activeProject.data;
+        renderAll();
+        notify("讀取已儲存資料失敗，已載入空白行程。", true);
+      }
+    })();
+  </script>
+</body>
+</html>
